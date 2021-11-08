@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log-In</title>
+    <style>
+        #login{
+            width: 20%;
+ 
+        }
+        input{
+            margin-top: 5%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Log In</h1>
+    <div>
+        <form onsubmit="Login(event);" id="login">
+            <input type="text" id="username" placeholder="Username"/>
+            <input type="text" id="password" placeholder="Password"/>
+            <input type ="submit"/>
+        </form>
+    </div>
+ 
+</body>
+</html>
+<script>
+    if(localStorage.getItem(" user_details")===null) {
+        localStorage.setItem("user_details",JSON.stringify([]))
+    }
+
+    function SignUp(e) {
+        e.preventDefault();
+
+        let form = document.getElementById("signup")
+
+        let user_details = {
+            name:form.name.value,
+            email:form.email.value,
+            password:form.password.value,
+            username:form.username.value,
+            mobile:form.mobile.value,
+            description:form.description.value,
+        };
+
+        user_details = JSON.stringify(user_details);
+
+        fetch("https://masai-api-mocker.herokuapp.com/auth/register",{
+            method: 'POST',
+            body: user_details,
+
+            headers:{
+                'Content-Type': 'application/json'
+            },
+        })
+        .then((response) => {
+            return response.json();
+        })
+        .then((response) => {
+            console.log(response);
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+    }
+
+    function Login(e) {
+        e.preventDefault();
+
+        let form = document.getElementById("login")
+
+        let user_details = {
+            username:form.username.value,
+            password:form.password.value,
+         
+        };
+
+        let data_send= JSON.stringify(user_details);
+        console.log(data_send);
+
+        fetch("https://masai-api-mocker.herokuapp.com/auth/login",{
+            method: 'POST',
+            body: data_send,
+
+            headers:{
+                'Content-Type': 'application/json'
+            },
+        })
+        .then((response) => {
+            return response.json();
+        })
+        .then((response) => {
+            console.log(response);
+            validReg(user_details.username,res.token)
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+    }
+
+    function validReg (username,token) {
+
+        fetch (`https://masai-api-mocker.herokuapp.com/user/${username}`,{
+
+            headers:{
+                'Content-Type': 'application/json',
+                Authorization: `Bearer${token}`
+            },
+        })
+
+        .then((response) => {
+            return response.json();
+        })
+        .then((response) => {
+            Login(user.username)
+            window.location.href = "index.html"
+            console.log(response);
+           
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+    }
+
+    function Login (user) {
+        let data = JSON.parse(localStorage.getItem("user_details"))
+        data.push(user);
+        localStorage.setItem("user_details",JSON.stringify(data));
+    }
+
+    let name_data = document.getElementById("user");
+    let data = JSON.parse(localStorage.getItem("user_details"))
+    console.log(data.length);
+    name_data.innerText = null;
+    name_data.append(data[data.length-1]);
+
+
+
+
+</script>
